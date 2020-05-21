@@ -7,15 +7,52 @@ library(dplyr)
 
 
 #' Extract data from CAMELS
+#' 
+#' This function takes a list of watershed Huc 8s and extracts daily mean forcing dayment data as well as relevant climate, geology, hyrdology, area, soil, topography and vegetation data
 #'
-#' @param basin_dir 
-#' @param attr_dir 
-#' @param huc8_names 
+#' @param daymet_dir directory path to basin data should look something like: "~/basin_dataset_public_v1p2/" this directory pathway MUST end with the daymet/ folder 
+#' -- within this folder there should more directories (labeled '01', '02', '03' etc) representing different huc2 watersheds
+#' @param attr_dir directory path for attributes data (e.g: "~/camels_attributes_v2.0")
+#' @param huc8_names vector of huc8 watershed IDs
 #'
-#' @return
+#' @return named list for each huc8 with 8 nested named lists, one for each attribut of interest
 #' @export
 #'
-#' @examples
+#' @examples \dontrun{
+#' daymet_dir <- "~/CAMELS/basin_dataset_public_v1p2"
+#' attr_dir <- "~/CAMELS/camels_attributes_v2.0"
+#' huc8_names <- c("01013500", "08269000")
+#' 
+#' data <- extract_data(daymet_dir = daymet_dir, attr_dir = attr_dir, huc8_names = huc8_names)
+#' 
+#' ## list of hucs queried
+#' > names(data)
+#' [1] "01013500" "08269000"
+#' 
+#' ## names of dataframes within first list item
+#' > names(data[[1]])
+#' [1] "daymet"       "camels_clim"  "camels_geol"  "camels_hydro"
+#' [5] "camels_name"  "camels_soil"  "camels_topo"  "camels_vege" 
+#' 
+#' ## same results using the huc ID for first ID in entered vector
+#' > names(data[["01013500"]])
+#' [1] "daymet"       "camels_clim"  "camels_geol"  "camels_hydro"
+#' [5] "camels_name"  "camels_soil"  "camels_topo"  "camels_vege" 
+#' 
+#' ## getting data for specific attribute from huc 01013500
+#' > data[["01013500"]]$camels_name
+#   A tibble: 1 x 3
+#' gauge_id huc_02 gauge_name                      
+#'    <chr>    <chr>  <chr>                           
+#'  1 01013500 01     Fish River near Fort Kent, Maine
+#'  
+#' ## similarly using the $ syntax:
+#' > data$`08269000`$camels_name
+#' A tibble: 1 x 3
+#' gauge_id huc_02 gauge_name                      
+#'    <chr>    <chr>  <chr>                           
+#'  1 08269000 13     RIO PUEBLO DE TAOS NEAR TAOS, NM
+#'}
 extract_huc_data <- function(basin_dir, attr_dir, huc8_names) {
   
   ### assuming a consistent file structure these should yield the correct filepaths to daymet forcing and streamflow data
