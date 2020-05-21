@@ -4,13 +4,21 @@ library(stringr)
 library(fs)
 library(dplyr)
 
-#### next step: 
 
 
-
+#' Extract data from CAMELS
+#'
+#' @param basin_dir 
+#' @param attr_dir 
+#' @param huc8_names 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 extract_huc_data <- function(basin_dir, attr_dir, huc8_names) {
   
-  ### assuming a consistent file structure these should yield the correct filepaths to daymet frocing and streamflow data
+  ### assuming a consistent file structure these should yield the correct filepaths to daymet forcing and streamflow data
   daymet_dir <- file.path(basin_dir, "basin_mean_forcing/daymet")
   flow_dir <- file.path(basin_dir, "usgs_streamflow")
   
@@ -150,5 +158,17 @@ extract_huc_data <- function(basin_dir, attr_dir, huc8_names) {
 }
 
 
+##### test function #######
 
+
+# Constant
+daymet_dir <- "~/Data/CAMELS/basin_timeseries_v1p2_metForcing_obsFlow/basin_dataset_public_v1p2/basin_mean_forcing/daymet/"
+attr_dir <- "~/Data/CAMELS/camels_attributes_v2.0"
+
+# To become a variable
+huc8_names <- c("01013500", "08269000", "test", "10259200")
+
+
+
+data <- extract_huc_data(daymet_dir = daymet_dir, attr_dir = attr_dir, huc8_names = huc8_names)
 
