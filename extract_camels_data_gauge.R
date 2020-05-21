@@ -56,7 +56,7 @@ library(dplyr)
 #'    <chr>    <chr>  <chr>                           
 #'  1 08269000 13     RIO PUEBLO DE TAOS NEAR TAOS, NM
 
-extract_huc_data <- function(daymet_dir, attr_dir, huc8_names) {
+extract_huc_data_gauge <- function(daymet_dir, attr_dir, huc8_names) {
   ### check that filepaths exist
   if(!dir_exists(daymet_dir)) stop("daymet directory does not exist, please check file path")
   if(str_sub(daymet_dir, start = -6) != "daymet") stop("daymet directory is incorrect, please check file path")
@@ -142,8 +142,8 @@ extract_huc_data <- function(daymet_dir, attr_dir, huc8_names) {
 
 
 # Constant
-daymet_dir <- "~/CAMELS/basin_dataset_public_v1p2/basin_mean_forcing/daymet"
-attr_dir <- "~/CAMELS/camels_attributes_v2.0"
+daymet_dir <- "~/Data/CAMELS/basin_timeseries_v1p2_metForcing_obsFlow/basin_dataset_public_v1p2/basin_mean_forcing/daymet"
+attr_dir <- "~/Data/CAMELS/camels_attributes_v2.0"
 
 # To become a variable
 huc8_names <- c("01013500", "08269000", "test", "10259200")
@@ -151,4 +151,4 @@ huc8_names <- c("01013500", "08269000", "test", "10259200")
 
 
 data <- extract_huc_data(daymet_dir = daymet_dir, attr_dir = attr_dir, huc8_names = huc8_names)
-
+data$
