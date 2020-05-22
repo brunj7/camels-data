@@ -1,0 +1,31 @@
+5_digit_code,Parameter_USGS,Parameter,Unit
+00060,"Discharge, cubic feet per second",Discharge,CFS
+00010,"Temperature, water, degrees Celsius",Temperature,CFS
+00607,"Organic nitrogen, water, filtered, milligrams per liter as nitrogen",DON,mg/L
+63509,"Organic nitrogen, suspended sediment, dry weight, percent",DON_suspended_sediment,%
+63517,"Organic carbon/organic nitrogen ratio, suspended sediment, atomic percent",DOC_DON_suspended_sediment,%
+64832,"Nitrate, water, filtered, micrograms per liter as nitrogen",NO3,ug N/L
+00608,"Ammonia (NH3 + NH4+), water, filtered, milligrams per liter as nitrogen",NH3_NH4,mg N/L
+00618,"Nitrate, water, filtered, milligrams per liter as nitrogen",NO3,mg N/L
+52760,"Organic nitrogen, soil, recoverable, dry weight, percent",ON_Soil,%
+62854,"Total nitrogen [nitrate + nitrite + ammonia + organic-N], water, filtered, analytically determined, milligrams per liter",TDN,mg/L
+00410,"Acid neutralizing capacity, water, unfiltered, fixed endpoint (pH 4.5) titration, field, milligrams per liter as calcium carbonate",CAN,mg/L CaCO3
+00681,"Organic carbon, water, filtered, milligrams per liter",DOC,mg/L
+00683,"Organic carbon, suspended sediment, dry weight, milligrams per kilogram",DOC_suspended_sediment,mg/kg
+28004,"Apparent age, water, filtered, carbon-14, years before present",DOC_14,BP
+51282,"Motor oil range organic compounds (C25-C36 hydrocarbons), water, unfiltered, recoverable, milligrams per liter",Motor_oil,mg/L
+52157,"Gasoline range organic compounds (C6-C10 hydrocarbons), water, unfiltered, recoverable, micrograms per liter",Gasoline,mg/L
+70961,"Productivity, primary, gross, milligrams carbon per cubic meter per day",GPP,m3/day
+70962,"Productivity, primary, gross, milligrams carbon per square meter per day",GPP,m2/day
+70965,"Productivity, primary, net, milligrams carbon per cubic meter per day",NPP,m3/day
+70966,"Productivity, primary, net, milligrams carbon per square meter per day",NPP,m2/day
+00300,"Dissolved oxygen, water, unfiltered, milligrams per liter",DO,mg/L
+00301,"Dissolved oxygen, water, unfiltered, percent of saturation",DO%,%
+00191,"Hydrogen ion, water, unfiltered, calculated, milligrams per liter",H+,mg/L
+00915,"Calcium, water, filtered, milligrams per liter",Ca2+,mg/L
+00925,"Magnesium, water, filtered, milligrams per liter",Mg2+,mg/L
+00094,"Specific conductance, water, unfiltered, field, microsiemens per centimeter at 25 degrees Celsius",Specific conductance,uS/cm@25C
+00572,"Biomass, periphyton, ash weight, grams per square meter",Periphyton Biomass,g/m2
+00573,"Biomass, periphyton, dry weight, grams per square meter",Periphyton Biomass,g/m2
+32209,"Chlorophyll a, water, fluorometric method, corrected, micrograms per liter",Chlorophyll-a,ug/m2
+32242,"Chlorophyll a, periphyton, fluorometric method, corrected, milligrams per square meter",Chlorophyll-a,mg/m2
