@@ -27,7 +27,7 @@ Attributes data (climatologies):
 
 We developped an R package [`CamelsQuery`](https://github.com/brunj7/CamelsQuery) to ease the query of the CAMELS data using HUC8 identifier of the basins / streamgauges. With also added wrapper functions around the `dataRetrieval package` from USGS to query for chemistry data.
 
-
+This repository gather analytical scripts used for data analaysis relying on the CamelsQuery 
 
 
 
