@@ -22,4 +22,13 @@ Attributes data (climatologies):
 - soil
 - geology
 
+
+## R package `CamelsQuery`
+
+We developped an R package [`CamelsQuery`](https://github.com/brunj7/CamelsQuery) to ease the query of the CAMELS data using HUC8 identifier of the basins / streamgauges. With also added wrapper functions around the `dataRetrieval package` from USGS to query for chemistry data.
+
+
+
+
+
 code creating the data: https://github.com/naddor/camels
