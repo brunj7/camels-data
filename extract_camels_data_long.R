@@ -18,7 +18,8 @@ library(dplyr)
 #' @return named list for each huc8 with 8 nested named lists, one for each attribut of interest
 #' @export
 #'
-#' @examples \dontrun{
+#' @examples 
+#' \dontrun{
 #' daymet_dir <- "~/CAMELS/basin_dataset_public_v1p2"
 #' attr_dir <- "~/CAMELS/camels_attributes_v2.0"
 #' huc8_names <- c("01013500", "08269000")
