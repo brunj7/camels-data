@@ -1,0 +1,11 @@
+5_digit_code,Parameter_USGS,Parameter,Unit
+00060,"Discharge, cubic feet per second",Discharge,CFS
+00607,"Organic nitrogen, water, filtered, milligrams per liter as nitrogen",DON,mg/L
+00618,"Nitrate, water, filtered, milligrams per liter as nitrogen",NO3,mg N/L
+62854,"Total nitrogen [nitrate + nitrite + ammonia + organic-N], water, filtered, analytically determined, milligrams per liter",TDN,mg/L
+00681,"Organic carbon, water, filtered, milligrams per liter",DOC,mg/L
+00094,"Specific conductance, water, unfiltered, field, microsiemens per centimeter at 25 degrees Celsius",Specific conductance,uS/cm@25C
+00650,"Phosphate, water, unfiltered, milligrams per liter as PO4",Total Phosphate-phosphorus,mg/l
+00660,"Orthophosphate, water, filtered, milligrams per liter as PO4",Dissolved 14265-44-2 Phosphate,mg/l asPO4
+00608,"Ammonia (NH3 + NH4+), water, filtered, milligrams per liter as nitrogen",NH3_NH4,mg N/L
+80154,"Suspended sediment concentration, milligrams per liter",SSC,mg/l
