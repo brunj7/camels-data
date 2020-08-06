@@ -1,0 +1,160 @@
+---
+title: "camels-testing"
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'pie_maps.html'))})
+output: html_document
+---
+
+```{r setup, message=FALSE, }
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(ggplot2)
+library(lubridate) # for dates
+library(janitor) # clean column names
+
+library(CamelsQuery) 
+```
+
+
+### This guide walks through the how to: 
+
+1. download CAMELS data remotely
+2. run and use the `extract_huc_data` function to query and visualize data from the CAMELS dataset
+3. use the `get_sample_data` function to get usgs streamgauge data
+  
+  
+##### download data
+
+Data can be download manually from https://ral.ucar.edu/solutions/products/camels. This package requires that specifically the following be downloaded from there:  
+- 1.2	CAMELS time series meteorology, observed flow, meta data (.zip)  
+- 2.0	CAMELS Attributes (.zip)   
+
+alternatively the `download_camels()` function can be used to automatically download and unzip the data into a folder of the user's choice
+
+
+```{r}
+### specify new folder to be created
+#~ note: this must be a nonexistant new folder within an already existing folder:
+#~ here this is simply creating a camels_data folder within the users home directory
+
+data_dir <- "~/Data/CAMELS"
+
+# download_camels(data_dir)
+```
+  
+  
+#### The function requires three inputs  
+
+* basin directory (basin_dir)  
+  + This is the location of the `basin_data_public_v1p2` folder. From this directory you should be able to further navigate to desired daymet mean forcing data folders (labeled 01, 02, 03, etc) via : `~/home/basin_dataset_public_v1p2/basin_mean_forcing/daymet` , and the streamflow folders should be in: `~/home/basin_dataset_public_v1p2/usgs_streamflow` . This *exact* folder structure is required for the function to work properly  
+* attribute directory (attr_dir)  
+  + location of .txt files for data attributes (camels_clim.txt, camels_geol.txt, etc)  
+* huc ids (huc8_names)  
+  + a vector of 8 digit huc 8 ids to be queried  
+
+
+## Test sites
+
+We selected few basins close to the gauges used in previous studies
+
+```{r}
+knitr::include_graphics("images/camels_test_sample.png")
+```
+
+  
+## Getting CAMELS data for our test sites  
+
+```{r}
+##~ directories
+my_basin_dir <- "~/Data/CAMELS/basin_timeseries_v1p2_metForcing_obsFlow/basin_dataset_public_v1p2"
+my_attr_dir <- "~/Data/CAMELS/camels_attributes_v2.0"
+##~ list of hucs to query (provided as a vector)
+my_huc8_names <- c("01144000", "01170100", "01169000")
+# stream_gauges <- read_csv("../inst/extdata/USGS_trial_sites.csv")
+# my_huc8_names <- stream_gauges$SiteNumber
+
+### run function
+##~ this returns a named list object with 9 items
+camels_data <- extract_huc_data(basin_dir = my_basin_dir, 
+                         attr_dir = my_attr_dir, 
+                         huc8_names = my_huc8_names)
+```
+ 
+
+## Access output   
+  
+#### view names of each list item
+```{r}
+names(camels_data)
+```
+    
+### access each item
+```{r}
+mean_forcing <- camels_data$mean_forcing_daymet
+### an alternative using [[]] syntax: 
+##~  mean_forcing <- camels_data[["mean_forcing_daymet"]]
+## OR, because this is the first item in the list:
+##~  mean_forcing <- camels_data[[1]]
+##this returns a tibble/data frame containing the mean forcing data
+glimpse(mean_forcing) 
+```
+
+
+## Visualize
+```{r, message=F}
+
+
+## first, rename huc ID's with location from camels_name, this isn't necessary, but makes for more informative labels
+locs <- camels_data[["camels_name"]]
+names(locs)
+
+# clean column names
+cleaned_forcing <- clean_names(mean_forcing)
+
+## join camels_data (by ID) to bring in gauge names
+cleaned_names <- left_join(cleaned_forcing, locs, by = c("id" = "gauge_id"))
+
+### turn year, month, day columns into single "date" column
+mean_forcing_date <- cleaned_names %>%
+  ## join columns, forcing into year, month, day format
+  mutate(date = ymd(paste(year, mnth, day, sep = "-")))
+ggplot(mean_forcing_date, aes(date, prcp_mm_day)) +
+  geom_line() +
+  facet_wrap(~gauge_name)
+```
+
+
+## Get USGS water quality data
+
+```{r}
+## read in gauges of interest
+# gauges <- readr::read_csv("../inst/extdata/USGS_trial_sites.csv")
+
+
+### dataRetrieval functions require sites to be named using an "Agency-Site#" format, this code reformats the trial sites csv into this format
+#~ eg: "USGS-01073319""
+# gauges_new <- gauges %>% 
+  # mutate(renamed_site = paste(SiteAgency, "-", SiteNumber, sep = ""))
+
+## get first 20 site names
+# site_names <- gauges_new$renamed_site
+site_names <- paste0("USGS-", my_huc8_names)
+
+sample_data <- get_sample_data(site_names)
+```
+
+
+```{r, warning=FALSE}
+## look at nitrogen species for all sites over time
+N_spp <- sample_data %>% 
+  filter(CharacteristicName == "Nitrogen, mixed forms (NH3), (NH4), organic, (NO2) and (NO3)")
+
+ggplot(N_spp, aes(x = ActivityStartDate, y = ResultMeasureValue, color = MonitoringLocationIdentifier)) +
+  geom_point() + labs(title = "Nitrogen, mixed forms (NH3), (NH4), organic, (NO2) and (NO3)")
+  
+
+```
