@@ -3,8 +3,8 @@ title: "camels-testing-flow"
 knit: (function(input_file, encoding) {
   out_dir <- 'docs';
   rmarkdown::render(input_file,
- encoding=encoding,
- output_file=file.path(dirname(input_file), out_dir, 'test_sites_more.html'))})
+  encoding=encoding,
+  output_file=file.path(dirname(input_file), out_dir, 'test_sites_more.html'))})
 output: html_document
 ---
 
@@ -31,38 +31,30 @@ knitr::include_graphics("images/camels_test_sampling_large.png")
 sites <- read_csv("testing-sites.csv") %>% 
   pull(hru_id)
 
-
-
 ```
 
 ## Get the CAMELS data for those sites
 ```{r camels}
-##~ directories
+# directories
 my_basin_dir <- "~/Data/CAMELS/basin_timeseries_v1p2_metForcing_obsFlow/basin_dataset_public_v1p2"
 my_attr_dir <- "~/Data/CAMELS/camels_attributes_v2.0"
-##~ list of hucs to query (provided as a vector)
-my_huc8_names <- sites
+# list of hucs to query (provided as a vector)
 
 
-### run function
-##~ this returns a named list object with 9 items
+# run function
+# this returns a named list object with 9 items
 camels_data <- extract_huc_data(basin_dir = my_basin_dir, 
                          attr_dir = my_attr_dir, 
-                         huc8_names = my_huc8_names)
+                         huc8_names = sites)
 
 ```
 
 ## Get the USGS data for those sites
 ```{r usgs}
-usgs_data <- get_sample_data(my_huc8_names) # takes some time
+usgs_data <- get_sample_data(sites) # takes some time
 
 ```
 
-## Comparing stream flow
-
-```{r}
-stream_data <- 
-```
 
 ```{r}
 # Read the data and format similar to CAMELS
@@ -72,7 +64,9 @@ usgs_q <- usgs_data$discharge %>%
 
 ggplot(usgs_q) +
   geom_point(aes(Date, discharge_cfs)) + 
-  facet_wrap(vars(site_no))
+  facet_wrap(vars(site_no)) + 
+  ggtitle(" Discharge USGS") + 
+  theme_bw()
 
 
 ```
@@ -87,7 +81,9 @@ camels_q <- camels_data$usgs_streamflow %>%
 
 ggplot(camels_q) +
   geom_point(aes(Date, discharge_cfs)) + 
-  facet_wrap(vars(site_no))
+  facet_wrap(vars(site_no)) +
+  ggtitle(" Discharge CAMELS") + 
+  theme_bw()
 
 
 ```
@@ -102,9 +98,13 @@ data_full <- data_full %>%
 
 ggplot(data_full) +
   geom_point(aes(Date, diff_q)) + 
-  facet_wrap(vars(site_no))
+  facet_wrap(vars(site_no)) + 
+  ggtitle(" Discharge USGS - CAMELS") + 
+  theme_bw()
 
 ```
+**We can see that CAMELS has not been updated recently**
+
 ## Writing csv files
 
 ```{r csv, eval = FALSE}
