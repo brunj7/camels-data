@@ -1,0 +1,127 @@
+---
+title: "camels-testing-flow"
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'test_sites_more.html'))})
+output: html_document
+---
+
+```{r setup, message=FALSE, }
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(ggplot2)
+library(lubridate) # for dates
+library(janitor) # clean column names
+
+library(CamelsQuery)  # remotes::install_github("brunj7/CamelsQuery")
+```
+
+## Import sites to process
+
+```{r}
+knitr::include_graphics("images/camels_test_sampling_large.png")
+```
+
+```{r sites}
+# Read the test sites
+
+sites <- read_csv("testing-sites.csv") %>% 
+  pull(hru_id)
+
+
+
+```
+
+## Get the CAMELS data for those sites
+```{r camels}
+##~ directories
+my_basin_dir <- "~/Data/CAMELS/basin_timeseries_v1p2_metForcing_obsFlow/basin_dataset_public_v1p2"
+my_attr_dir <- "~/Data/CAMELS/camels_attributes_v2.0"
+##~ list of hucs to query (provided as a vector)
+my_huc8_names <- sites
+
+
+### run function
+##~ this returns a named list object with 9 items
+camels_data <- extract_huc_data(basin_dir = my_basin_dir, 
+                         attr_dir = my_attr_dir, 
+                         huc8_names = my_huc8_names)
+
+```
+
+## Get the USGS data for those sites
+```{r usgs}
+usgs_data <- get_sample_data(my_huc8_names) # takes some time
+
+```
+
+## Comparing stream flow
+
+```{r}
+stream_data <- 
+```
+
+```{r}
+# Read the data and format similar to CAMELS
+usgs_q <- usgs_data$discharge %>%
+  select(site_no, Date, X_00060_00003) %>%
+  rename(discharge_cfs = X_00060_00003)
+
+ggplot(usgs_q) +
+  geom_point(aes(Date, discharge_cfs)) + 
+  facet_wrap(vars(site_no))
+
+
+```
+
+```{r}
+# Read the data and format similar to CAMELS
+
+camels_q <- camels_data$usgs_streamflow %>%
+  mutate(Date = make_date(Year, Mnth, Day)) %>%
+  rename(site_no= ID) %>%
+  mutate(site_no = paste0("0", site_no))
+
+ggplot(camels_q) +
+  geom_point(aes(Date, discharge_cfs)) + 
+  facet_wrap(vars(site_no))
+
+
+```
+## Comparing the flows
+
+```{r comparison}
+
+data_full <-  full_join(camels_q, usgs_q, by = c("site_no", "Date"))
+
+data_full <- data_full %>%
+  mutate(diff_q = discharge_cfs.y - discharge_cfs.x) # USGS - CAMELS
+
+ggplot(data_full) +
+  geom_point(aes(Date, diff_q)) + 
+  facet_wrap(vars(site_no))
+
+```
+## Writing csv files
+
+```{r csv, eval = FALSE}
+
+# Discharge
+write_csv(camels_q, "data/camels_discharge_test_sites.csv")
+
+write_csv(usgs_q, "data/usgs_discharge_test_sites.csv")
+
+# Water Quality
+write_csv(usgs_data$water_q, "data/usgs_waterq_test_sites.csv")
+
+# Sites info
+write_csv(usgs_data$sites, "data/usgs_test_sites.csv")
+
+# Camels forcing
+write_csv(camels_data$mean_forcing_daymet, "data/camels_forcing_test_sites.csv")
+
+```
+
