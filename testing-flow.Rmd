@@ -34,10 +34,11 @@ sites <- read_csv("testing-sites.csv") %>%
 ```
 
 ## Get the CAMELS data for those sites
+
 ```{r camels}
 # directories
-my_basin_dir <- "~/Data/CAMELS/basin_timeseries_v1p2_metForcing_obsFlow/basin_dataset_public_v1p2"
-my_attr_dir <- "~/Data/CAMELS/camels_attributes_v2.0"
+my_basin_dir <- "~/Data/camels/basin_dataset_public_v1p2"
+my_attr_dir <- "~/Data/camels/camels_attributes_v2.0"
 # list of hucs to query (provided as a vector)
 
 
@@ -56,12 +57,56 @@ usgs_data <- get_sample_data(sites) # takes some time
 ```
 
 
-```{r}
-# Read the data and format similar to CAMELS
-usgs_q <- usgs_data$discharge %>%
-  select(site_no, Date, X_00060_00003) %>%
-  rename(discharge_cfs = X_00060_00003)
+```{r Read the data and format similar to CAMELS} 
+## Discharge
 
+usgs_q <- usgs_data$discharge %>%
+  select(site_no, Date, X_00060_00003, X_00060_00003_cd ) %>%
+  rename(discharge_cfs = X_00060_00003) %>%
+  rename(discharge_cfs_qflag = X_00060_00003_cd) 
+
+
+## Water Quality
+
+# Remove the unwanted fields
+# Read the list
+chem_cols_drop <- read_csv("chem_fields_drop.csv") %>%
+  separate(field_drop,c("number", "name"), sep = "-") %>%
+  mutate(name = stringr::str_trim(name))
+
+# Drop the fields
+usgs_chem <- usgs_data$water_q %>%
+  select(-chem_cols_drop$name)
+
+# Quick check
+cat("checking dimensions\n")
+nrow(chem_cols_drop)
+dim(usgs_data$water_q)
+dim(usgs_chem)
+
+```
+
+```{r}
+
+# Get the flow from chemistry data
+usgs_chem_q <- usgs_chem %>%
+  filter(str_detect(CharacteristicName,"flow")) %>%    # keep some room for other potential types of flow
+  select(MonitoringLocationIdentifier, ActivityStartDate, ActivityStartTime.Time, ActivityStartTime.TimeZoneCode,CharacteristicName, ResultMeasureValue, ResultMeasure.MeasureUnitCode) %>%
+  separate(MonitoringLocationIdentifier, c("Organization", "site_no"), sep = "-")
+
+# Combine it with the flow
+all_q <- left_join(usgs_q, usgs_chem_q, by = c("site_no","Date" = "ActivityStartDate")) %>%
+  mutate(flow_diff = discharge_cfs - ResultMeasureValue)
+
+ggplot(all_q) +
+  geom_point(aes(Date, flow_diff)) + 
+  facet_wrap(vars(site_no)) + 
+  ggtitle(" Discharge diff USGS daily - USGS chem ") + 
+  theme_bw()
+```
+It has been noted that all the stream data associated with chemistry samples are old (prior 1995 and a lot of sixties and seventies). Maybe this practice is not happening anymore or they changed the discharge code that is used. TBD
+
+```{r}
 ggplot(usgs_q) +
   geom_point(aes(Date, discharge_cfs)) + 
   facet_wrap(vars(site_no)) + 
@@ -110,12 +155,12 @@ ggplot(data_full) +
 ```{r csv, eval = FALSE}
 
 # Discharge
-write_csv(camels_q, "data/camels_discharge_test_sites.csv")
+# write_csv(camels_q, "data/camels_discharge_test_sites.csv")
 
 write_csv(usgs_q, "data/usgs_discharge_test_sites.csv")
 
 # Water Quality
-write_csv(usgs_data$water_q, "data/usgs_waterq_test_sites.csv")
+write_csv(usgs_chem "data/usgs_waterq_test_sites.csv")
 
 # Sites info
 write_csv(usgs_data$sites, "data/usgs_test_sites.csv")
