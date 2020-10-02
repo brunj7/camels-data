@@ -166,6 +166,7 @@ write_csv(all_q, file.path(main_dir, "output/usgs_discharge_huc1_sites.csv"))
 # removing the stream flow since it was added to the main stream flow file
 usgs_chem <- usgs_chem %>%
   filter(!str_detect(CharacteristicName,"flow"))
+
 # Write the file
 write_csv(usgs_chem, file.path(main_dir, "output/usgs_waterq_huc1_sites.csv"))
 
@@ -174,6 +175,13 @@ write_csv(usgs_data$sites, file.path(main_dir,"output/usgs_huc1_sites.csv"))
 
 # Camels forcing
 write_csv(camels_data$mean_forcing_daymet, file.path(main_dir,"output/camels_forcing_huc1_sites.csv"))
+
+# Camels attributes
+write_csv(camels_data$camels_clim, file.path(main_dir,"output/camels_att_clim_huc1_sites.csv"))
+write_csv(camels_data$camels_geol, file.path(main_dir,"output/camels_att_geol_huc1_sites.csv"))
+write_csv(camels_data$camels_soil, file.path(main_dir,"output/camels_att_soil_huc1_sites.csv"))
+write_csv(camels_data$camels_topo, file.path(main_dir,"output/camels_att_topo_huc1_sites.csv"))
+write_csv(camels_data$camels_vege, file.path(main_dir,"output/camels_att_vege_huc1_sites.csv"))
 
 ```
 
