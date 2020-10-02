@@ -95,7 +95,7 @@ dim(usgs_chem)
 # Get the flow from chemistry data
 usgs_chem_q <- usgs_chem %>%
   filter(str_detect(CharacteristicName,"flow")) %>%    # keep some room for other potential types of flow
-  select(MonitoringLocationIdentifier, ActivityStartDate, ActivityStartTime.Time, ActivityStartTime.TimeZoneCode,CharacteristicName, ResultMeasureValue, ResultMeasure.MeasureUnitCode) %>%
+  select(MonitoringLocationIdentifier, ActivityStartDate, ActivityStartTime.Time, ActivityStartTime.TimeZoneCode,HydrologicCondition, HydrologicEvent, CharacteristicName, ResultMeasureValue, ResultMeasure.MeasureUnitCode) %>%
   separate(MonitoringLocationIdentifier, c("Organization", "site_no"), sep = "-")
 
 # Combine it with the flow
@@ -160,10 +160,13 @@ ggplot(data_full) +
 
 # Discharge
 # write_csv(camels_q, "data/camels_discharge_test_sites.csv")
-
-write_csv(usgs_q, file.path(main_dir, "output/usgs_discharge_huc1_sites.csv"))
+write_csv(all_q, file.path(main_dir, "output/usgs_discharge_huc1_sites.csv"))
 
 # Water Quality
+# removing the stream flow since it was added to the main stream flow file
+usgs_chem <- usgs_chem %>%
+  filter(!str_detect(CharacteristicName,"flow"))
+# Write the file
 write_csv(usgs_chem, file.path(main_dir, "output/usgs_waterq_huc1_sites.csv"))
 
 # Sites info
