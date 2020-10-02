@@ -28,8 +28,12 @@ knitr::include_graphics("images/camels_test_sampling_large.png")
 ```{r sites}
 # Read the test sites
 
-sites <- read_csv("testing-sites.csv") %>% 
-  pull(hru_id)
+# # Test sites
+# sites <- read_csv("testing-sites.csv") %>% 
+#   pull(hru_id)
+
+# HUC 1 sites
+sites <- readr::read_csv("huc1_sites.txt", col_names = FALSE) %>% pull()
 
 ```
 
@@ -37,12 +41,12 @@ sites <- read_csv("testing-sites.csv") %>%
 
 ```{r camels}
 # directories
-my_basin_dir <- "~/Data/camels/basin_dataset_public_v1p2"
-my_attr_dir <- "~/Data/camels/camels_attributes_v2.0"
-# list of hucs to query (provided as a vector)
+main_dir <- "/home/shares/camels/"
+my_basin_dir <- file.path(main_dir, "basin_dataset_public_v1p2")
+my_attr_dir <- file.path(main_dir, "camels_attributes_v2.0")
 
 
-# run function
+# Read the CAMELS forcing
 # this returns a named list object with 9 items
 camels_data <- extract_huc_data(basin_dir = my_basin_dir, 
                          attr_dir = my_attr_dir, 
@@ -157,16 +161,16 @@ ggplot(data_full) +
 # Discharge
 # write_csv(camels_q, "data/camels_discharge_test_sites.csv")
 
-write_csv(usgs_q, "data/usgs_discharge_test_sites.csv")
+write_csv(usgs_q, file.path(main_dir, "output/usgs_discharge_huc1_sites.csv"))
 
 # Water Quality
-write_csv(usgs_chem "data/usgs_waterq_test_sites.csv")
+write_csv(usgs_chem, file.path(main_dir, "output/usgs_waterq_huc1_sites.csv"))
 
 # Sites info
-write_csv(usgs_data$sites, "data/usgs_test_sites.csv")
+write_csv(usgs_data$sites, file.path(main_dir,"output/usgs_huc1_sites.csv"))
 
 # Camels forcing
-write_csv(camels_data$mean_forcing_daymet, "data/camels_forcing_test_sites.csv")
+write_csv(camels_data$mean_forcing_daymet, file.path(main_dir,"output/camels_forcing_huc1_sites.csv"))
 
 ```
 
