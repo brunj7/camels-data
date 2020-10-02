@@ -179,9 +179,11 @@ write_csv(camels_data$mean_forcing_daymet, file.path(main_dir,"output/camels_for
 # Camels attributes
 write_csv(camels_data$camels_clim, file.path(main_dir,"output/camels_att_clim_huc1_sites.csv"))
 write_csv(camels_data$camels_geol, file.path(main_dir,"output/camels_att_geol_huc1_sites.csv"))
+write_csv(camels_data$camels_hydro, file.path(main_dir,"output/camels_att_hydro_huc1_sites.csv"))
 write_csv(camels_data$camels_soil, file.path(main_dir,"output/camels_att_soil_huc1_sites.csv"))
 write_csv(camels_data$camels_topo, file.path(main_dir,"output/camels_att_topo_huc1_sites.csv"))
 write_csv(camels_data$camels_vege, file.path(main_dir,"output/camels_att_vege_huc1_sites.csv"))
+
 
 ```
 
