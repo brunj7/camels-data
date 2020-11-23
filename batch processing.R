@@ -17,22 +17,34 @@ huc2_list <- dir(file.path(my_basin_dir,"basin_mean_forcing","daymet"), full.nam
 huc2_path <- dir(file.path(my_basin_dir,"basin_mean_forcing","daymet"), full.names = TRUE)
 
 # loop 
-for (h in 1:length(huc2_list)) {
-  print(huc2_list[h])
-  # get the site list
+# for (h in 1:length(huc2_list)) {
+h=15
+
+  message(paste0("processing HUC # ",huc2_list[h]))
+  
+  ### get the site list ----
   sites <- list.files(huc2_path[h]) %>% str_split("_", simplify = TRUE)
   site_ids <- sites[,1]
+  
+  # Chunk ids by 10
+  site_ids_chunks <- split(site_ids, ceiling(seq_along(site_ids)/10))
 
-  ## Get the CAMELS data
+  
+  ### Get the CAMELS data ----
+  # message("<---- Getting CAMELS forcing and attributes ---->")
+  
   camels_data <- extract_huc_data(basin_dir = my_basin_dir, 
                                   attr_dir = my_attr_dir, 
                                   huc8_names = site_ids)
 
-  ## Get the USGS data for those sites
+  ### Get the USGS data for those sites----
+  # message("<---- Getting USGS flow and chemistry ---->")
+  
   usgs_data <- get_sample_data(site_ids) # takes some time
   
 
-  ## Write the csv files
+  ### Write the csv files ----
+  # message("<---- Writing files ---->")
   
   # Discharge
   # write_csv(camels_q, "data/camels_discharge_test_sites.csv")
@@ -60,4 +72,4 @@ for (h in 1:length(huc2_list)) {
   write_csv(camels_data$camels_topo, file.path(main_dir, sprintf("output/camels_att_topo_huc%s_sites.csv", huc2_list[h])))
   write_csv(camels_data$camels_vege, file.path(main_dir, sprintf("output/camels_att_vege_huc%s_sites.csv", huc2_list[h])))
   
-}
+# }
