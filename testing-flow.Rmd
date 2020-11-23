@@ -15,8 +15,8 @@ library(tidyverse)
 library(ggplot2)
 library(lubridate) # for dates
 library(janitor) # clean column names
-
-library(CamelsQuery)  # remotes::install_github("brunj7/CamelsQuery")
+# remotes::install_github("brunj7/CamelsQuery")
+library(CamelsQuery)  
 ```
 
 ## Import sites to process
@@ -35,6 +35,8 @@ knitr::include_graphics("images/camels_test_sampling_large.png")
 # HUC 1 sites
 sites <- readr::read_csv("huc1_sites.txt", col_names = FALSE) %>% pull()
 
+# sites_test <- c("01013500", "01022500", "01030500")
+# tt <- get_sample_data(sites_test)
 ```
 
 ## Get the CAMELS data for those sites
@@ -64,11 +66,7 @@ usgs_data <- get_sample_data(sites) # takes some time
 ```{r Read the data and format similar to CAMELS} 
 ## Discharge
 
-usgs_q <- usgs_data$discharge %>%
-  select(site_no, Date, X_00060_00003, X_00060_00003_cd ) %>%
-  rename(discharge_cfs = X_00060_00003) %>%
-  rename(discharge_cfs_qflag = X_00060_00003_cd) 
-
+usgs_q <- usgs_data$discharge
 
 ## Water Quality
 
@@ -96,7 +94,7 @@ dim(usgs_chem)
 usgs_chem_q <- usgs_chem %>%
   filter(str_detect(CharacteristicName,"flow")) %>%    # keep some room for other potential types of flow
   select(MonitoringLocationIdentifier, ActivityStartDate, ActivityStartTime.Time, ActivityStartTime.TimeZoneCode,HydrologicCondition, HydrologicEvent, CharacteristicName, ResultMeasureValue, ResultMeasure.MeasureUnitCode) %>%
-  separate(MonitoringLocationIdentifier, c("Organization", "site_no"), sep = "-")
+  separate(MonitoringLocationIdentifier, c("organization", "site_no"), sep = "-")
 
 # Combine it with the flow
 all_q <- left_join(usgs_q, usgs_chem_q, by = c("site_no","Date" = "ActivityStartDate")) %>%
@@ -125,7 +123,7 @@ ggplot(usgs_q) +
 
 camels_q <- camels_data$usgs_streamflow %>%
   mutate(Date = make_date(Year, Mnth, Day)) %>%
-  rename(site_no= ID) %>%
+  rename(site_no = ID) %>%
   mutate(site_no = paste0("0", site_no))
 
 ggplot(camels_q) +
