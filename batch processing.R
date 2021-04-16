@@ -17,8 +17,8 @@ huc2_list <- dir(file.path(my_basin_dir,"basin_mean_forcing","daymet"), full.nam
 huc2_path <- dir(file.path(my_basin_dir,"basin_mean_forcing","daymet"), full.names = TRUE)
 
 # loop 
-# for (h in 1:length(huc2_list)) {
-h=15
+for (h in (16:18)) { #:length(huc2_list)) {
+# h=6
 
   message(paste0("processing HUC # ",huc2_list[h]))
   
@@ -53,7 +53,7 @@ h=15
   # Water Quality
   # removing the stream flow since it was added to the main stream flow file
   usgs_chem <- usgs_data$water_ %>%
-    filter(!str_detect(CharacteristicName,"flow"))
+    filter(!str_detect(CharacteristicName, "flow"))
   
   # Write the file
   write_csv(usgs_chem, file.path(main_dir, sprintf("output/usgs_waterq_huc%s_sites.csv", huc2_list[h])))
@@ -72,4 +72,6 @@ h=15
   write_csv(camels_data$camels_topo, file.path(main_dir, sprintf("output/camels_att_topo_huc%s_sites.csv", huc2_list[h])))
   write_csv(camels_data$camels_vege, file.path(main_dir, sprintf("output/camels_att_vege_huc%s_sites.csv", huc2_list[h])))
   
-# }
+  # A little break for the API
+  # Sys.sleep(10)
+}
