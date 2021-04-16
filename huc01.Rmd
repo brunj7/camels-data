@@ -1,0 +1,56 @@
+---
+title: "Testing HUC2"
+author: "Julien Brun"
+date: "4/02/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, warning=FALSE}
+library(tidyverse)
+library(dataRetrieval)
+```
+
+
+## Retrieving sites within a Hydrological Region (HUC2)
+
+```{r}
+sites <- whatNWISsites(huc = "01") 
+
+# Keeping only the HUC8
+sites <- sites %>% 
+  filter(nchar(site_no) == 8 & site_tp_cd == "ST")
+
+
+# Query for the daily discharge for all those sites
+discharge <- "00060"
+# Takes ~10hours!!!!
+discharge_data <- readNWISdv(siteNumbers = sites$site_no,
+                     parameterCd = discharge)
+
+write_csv(discharge_data, "/home/shares/camels/output/HUC01/huc01_daily_flow.csv")
+```
+
+## Retrieving sites based on Chemistry
+
+```{r}
+
+# Read the priority codes
+my_codes <- read_csv("Parameter_Codes_Priority.csv")
+
+# Query all the sites
+wq_sites <- whatWQPsites(huc = "01", 
+                              pCode = my_codes$`5_digit_code`)
+# Keep only the Streams
+wq_sites <- wq_sites %>%
+  filter(MonitoringLocationTypeName == "Stream")
+
+# Check what is the data quantity available (seems to be bulk for all the codes)
+wq_data_available <- whatWQPdata(siteid = wq_sites$MonitoringLocationIdentifier,
+                                 pCode = my_codes$`5_digit_code`)
+```
+
