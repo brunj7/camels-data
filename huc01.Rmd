@@ -19,9 +19,10 @@ library(dataRetrieval)
 ## Retrieving sites within a Hydrological Region (HUC2)
 
 ```{r}
-sites <- whatNWISsites(huc = "01") 
+sites <- whatNWISsites(huc = "01",
+                       pCode <- "00060") # discharge sites
 
-# Keeping only the HUC8
+# Keeping only the HUC8 & Stream
 sites <- sites %>% 
   filter(nchar(site_no) == 8 & site_tp_cd == "ST")
 
@@ -42,15 +43,26 @@ write_csv(discharge_data, "/home/shares/camels/output/HUC01/huc01_daily_flow.csv
 # Read the priority codes
 my_codes <- read_csv("Parameter_Codes_Priority.csv")
 
-# Query all the sites
+# Query all the Stream sites
 wq_sites <- whatWQPsites(huc = "01", 
-                              pCode = my_codes$`5_digit_code`)
-# Keep only the Streams
-wq_sites <- wq_sites %>%
-  filter(MonitoringLocationTypeName == "Stream")
+                         pCode = my_codes$`5_digit_code`,
+                         siteType="Stream")
+
 
 # Check what is the data quantity available (seems to be bulk for all the codes)
 wq_data_available <- whatWQPdata(siteid = wq_sites$MonitoringLocationIdentifier,
                                  pCode = my_codes$`5_digit_code`)
+
+# Keep only sites with more than 10  measurements
+data_sites_to_get <- wq_data_available %>% 
+  filter(resultCount >= 10)
+
+# Get the data
+wq_data <- readWQPdata(siteNumbers = data_sites_to_get$MonitoringLocationIdentifier,
+                        pCode = my_codes$`5_digit_code`)
+
+# Save the data as csv
+write_csv(wq_data, "/home/shares/camels/output/HUC01/huc01_wq.csv")
+
 ```
 
