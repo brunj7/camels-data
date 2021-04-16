@@ -61,8 +61,18 @@ data_sites_to_get <- wq_data_available %>%
 wq_data <- readWQPdata(siteNumbers = data_sites_to_get$MonitoringLocationIdentifier,
                         pCode = my_codes$`5_digit_code`)
 
+# Remove the unwanted fields
+# Read the list
+chem_cols_drop <- read_csv("chem_fields_drop.csv") %>%
+  separate(field_drop,c("number", "name"), sep = "-") %>%
+  mutate(name = stringr::str_trim(name))
+
+# Drop the fields
+usgs_chem <-wq_data %>%
+  select(-chem_cols_drop$name)
+
 # Save the data as csv
-write_csv(wq_data, "/home/shares/camels/output/HUC01/huc01_wq.csv")
+write_csv(usgs_chem, "/home/shares/camels/output/HUC01/huc01_wq.csv")
 
 ```
 
