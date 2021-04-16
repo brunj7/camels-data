@@ -1,6 +1,6 @@
 ---
-title: "Testing HUC2"
-author: "Julien Brun"
+title: "Retrieving stream measurement sites & data within an USGS Hydrological Region (HUC2)"
+author: "brun@nceas.ucsb.edu"
 date: "4/02/2021"
 output: html_document
 ---
@@ -13,13 +13,19 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, warning=FALSE}
 library(tidyverse)
 library(dataRetrieval)
+
+output_path <- "/home/shares/camels/output/HUC01"
 ```
 
 
-## Retrieving sites within a Hydrological Region (HUC2)
+## Retrieving sites discharge
 
-```{r}
-sites <- whatNWISsites(huc = "01",
+Here we are using the USGS hydrological Region `HUC01` as an example
+
+```{r, eval=FALSE}
+HUC2 <- "01"
+
+sites <- whatNWISsites(huc = HUC2,
                        pCode <- "00060") # discharge sites
 
 # Keeping only the HUC8 & Stream
@@ -33,18 +39,19 @@ discharge <- "00060"
 discharge_data <- readNWISdv(siteNumbers = sites$site_no,
                      parameterCd = discharge)
 
-write_csv(discharge_data, "/home/shares/camels/output/HUC01/huc01_daily_flow.csv")
+# Save the data as csv
+write_csv(discharge_data, file.path(output_path,"huc01_daily_flow.csv"))
 ```
 
-## Retrieving sites based on Chemistry
+## Retrieving sites and data based on Chemistry
 
-```{r}
+```{r, eval=FALSE}
 
-# Read the priority codes
+# Read the priority codes of the chemical component we are interested in
 my_codes <- read_csv("Parameter_Codes_Priority.csv")
 
 # Query all the Stream sites
-wq_sites <- whatWQPsites(huc = "01", 
+wq_sites <- whatWQPsites(huc = HUC2, 
                          pCode = my_codes$`5_digit_code`,
                          siteType="Stream")
 
@@ -72,7 +79,7 @@ usgs_chem <-wq_data %>%
   select(-chem_cols_drop$name)
 
 # Save the data as csv
-write_csv(usgs_chem, "/home/shares/camels/output/HUC01/huc01_wq.csv")
+write_csv(usgs_chem, file.path(output_path,"huc01_wq.csv"))
 
 ```
 
